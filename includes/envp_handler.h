@@ -1,34 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   def.h                                              :+:      :+:    :+:   */
+/*   envp_handler.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
+/*   By: jyoo < jyoo@student.42gyeongsan.kr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/23 13:52:20 by yoshin            #+#    #+#             */
-/*   Updated: 2025/05/12 14:31:10 by yoshin           ###   ########.fr       */
+/*   Created: 2025/07/20 20:23:42 by jyoo              #+#    #+#             */
+/*   Updated: 2025/07/20 20:31:17 by jyoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef DEF_H
-# define DEF_H
+#ifndef ENVP_HANDLER_H
+# define ENVP_HANDLER_H
 
-typedef enum e_status
+typedef struct s_envps
 {
-	SUCCESS = 1,
-	FAIL = 0
-}	t_status;
-
-typedef enum e_boolean
-{
-	TRUE = 1,
-	FALSE = 0
-}	t_boolean;
-
-typedef enum e_flag
-{
-	ON = 1,
-	OFF = 0
-}	t_flag;
+	char			*value;
+	struct s_envps	*prev;
+	struct s_envps	*next;
+}	t_envps;
 
 #endif
