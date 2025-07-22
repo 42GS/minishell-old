@@ -6,7 +6,7 @@
 /*   By: jyoo < jyoo@student.42gyeongsan.kr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 20:31:32 by jyoo              #+#    #+#             */
-/*   Updated: 2025/07/22 15:57:40 by jyoo             ###   ########.fr       */
+/*   Updated: 2025/07/22 21:59:20 by jyoo             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,11 @@ void	destory_envp(t_envps *envp_lst, t_envps *unset_envp)
 
 	if (!envp_lst || !unset_envp)
 		exit ;
-	while (envp_lst != unset_envp)
-		envp_lst->next;
-	temp_envp = unset_envp;
 	envp_lst->next = next_node;
 	envp_lst->prev = prev_node;
+	temp_envp = unset_envp;
+	while (envp_lst != unset_envp)
+		envp_lst->next;
 	envp_lst = envp_lst->prev;
 	envp_lst->next = next_node;
 	envp_lst = envp_lst->next;
