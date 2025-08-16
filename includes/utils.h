@@ -6,14 +6,16 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 20:56:21 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/09 03:52:20 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/16 14:05:53 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_H
 # define UTILS_H
 
-# define INIT_CAPACITY 16
+# define INIT_CAPACITY	(16)
+# define S_IDX			(0)
+# define P_IDX			(1)
 
 # include "def.h"
 
