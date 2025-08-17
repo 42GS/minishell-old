@@ -6,7 +6,7 @@
 /*   By: jyoo <jyoo@student.42gyeongsan.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 20:39:35 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 20:38:57 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 03:19:59 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,18 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include "sig.h"
+#include <readline/readline.h>
 
 #include "libft.h"
 
 #include "def.h"
 
-#include "eval.h"
-#include "parser.h"
+#include "sig.h"
 #include "shell_data.h"
 #include "utils.h"
+#include "debug.h"
+
+#include "eval.h"
 
 static t_status	set_stdin(t_syntax_node *io_redir_node);
 static t_status	set_heredoc(t_syntax_node *io_redir_node);
@@ -112,27 +114,39 @@ static t_status	set_heredoc(t_syntax_node *io_redir_node)
 	int		pipe_fds[2];
 	pid_t	pid;
 	int		status;
+	char	*heredoc_line;
 
 	if (pipe(pipe_fds) == -1)
 		return (ERROR);
+	(get_shell_data())->in_heredoc = TRUE;
+	set_heredoc_signals();
 	pid = fork();
 	if (pid == 0)
 	{
-		restore_terminal_settings();
 		close(pipe_fds[PIPE_READ]);
+		heredoc_line = heredoc(io_redir_node->value.io_target);
 		ft_putstr_fd(
-			heredoc(io_redir_node->value.io_target),
+			heredoc_line,
 			pipe_fds[PIPE_WRITE]);
+		debug("from heredoc_child - %s", heredoc_line);
+		free(heredoc_line);
 		exit(EXIT_SUCCESS);
 	}
 	close(pipe_fds[PIPE_WRITE]);
 	close(STDIN_FILENO);
 	dup2(pipe_fds[PIPE_READ], STDIN_FILENO);
-	waitpid(pid, &status, 0);
+	waitpid(pid, &status, 0); // <===
+	if (errno)
+		debug("[set_heredoc] strerr : %s", strerror(errno));
+	(get_shell_data())->in_heredoc = FALSE;
 	if (WIFEXITED(status))
-		(get_shell_data())->last_status = WEXITSTATUS(status);
+    	(get_shell_data())->last_status = WEXITSTATUS(status);
 	if (WIFSIGNALED(status))
-		(get_shell_data())->last_status = WTERMSIG(status);
+	{
+    	(get_shell_data())->last_status = 128 + WTERMSIG(status);
+		debug("[pid : %d] child signal : %d(%s), ", getpid(), WTERMSIG(status), strsignal(WTERMSIG(status)));
+		exit(get_shell_data()->last_status);
+	}
 	return (SUCCESS);
 }
 

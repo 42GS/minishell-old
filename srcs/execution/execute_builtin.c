@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   eval_builtin.c                                     :+:      :+:    :+:   */
+/*   execute_builtin.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jyoo < jyoo@student.42gyeongsan.kr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/08 22:12:37 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 21:52:13 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 01:33:38 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,8 @@
 #include "libft.h"
 
 #include "def.h"
-#include "eval.h"
 #include "builtin.h"
+#include "execute.h"
 
 /**
  * @brief 빌트인(builtin) 명령어를 실행한다.
@@ -34,7 +34,7 @@
  * - 비교 시 ft_strncmp()로 명령어 문자열이 완전히 일치하는지 확인한다.
  * - 빌트인이 아닌 경우에는 외부 명령 실행 경로로 넘어가야 한다.
  */
-t_status	execute_builtin(t_cmd_form cmd_form)
+t_status	execute_builtin(t_cmd_form *cmd_form)
 {
 	static t_builtin_entry	builtins[] = {
 	{"cd", builtin_cd},
@@ -43,7 +43,7 @@ t_status	execute_builtin(t_cmd_form cmd_form)
 	{"unset", builtin_unset},
 	{"echo", builtin_echo},
 	{"env", builtin_env},
-	{"exit", builtin_exit},
+	{"eixt", builtin_exit},
 	};
 	size_t					idx;
 
@@ -51,8 +51,8 @@ t_status	execute_builtin(t_cmd_form cmd_form)
 	while (++idx < sizeof(builtins) / sizeof(t_builtin_entry))
 	{
 		if (ft_strncmp(builtins[idx].cmd_str, \
-				cmd_form.cmd, ft_strlen(builtins[idx].cmd_str) + 1) == 0)
-			return ((builtins[idx].cmd)(cmd_form.args));
+				cmd_form->cmd, ft_strlen(builtins[idx].cmd_str) + 1) == 0)
+			return ((builtins[idx].cmd)(cmd_form->args));
 	}
 	return (FAILURE);
 }

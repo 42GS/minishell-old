@@ -6,7 +6,7 @@
 /*   By: jyoo <jyoo@student.42gyeongsan.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/05 15:45:27 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 22:20:22 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 02:48:04 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,16 @@
 #include <fcntl.h>
 #include <signal.h>
 
-#include "eval.h"
+#include "ast.h"
+#include "def.h"
 #include "shell_data.h"
-#include "sig.h"
 
-static void	setup_pipe(pid_t child_pids[2], int pipe_fds[2]);
-static int	wait_pipe(pid_t child_pids[2], int *status);
+#include "eval.h"
+
+#include "debug.h"
+
+static void			setup_pipe(pid_t child_pids[2], int pipe_fds[2]);
+static int			wait_pipe(pid_t child_pids[2], int *status);
 
 /**
  * @brief 파이프라인 노드를 평가하여 명령을 실행한다.
@@ -53,14 +57,12 @@ t_status	eval_pipeline(t_syntax_node	*pipeline_node)
 	child_pids[CHILD_LEFT] = fork();
 	if (child_pids[CHILD_LEFT] == 0)
 	{
-		restore_signals();
 		setup_pipe(child_pids, pipe_fds);
 		exit(eval(pipeline_node->value.b_node.left));
 	}
 	child_pids[CHILD_RIGHT] = fork();
 	if (child_pids[CHILD_RIGHT] == 0)
 	{
-		restore_signals();
 		setup_pipe(child_pids, pipe_fds);
 		exit(eval(pipeline_node->value.b_node.right));
 	}
@@ -83,14 +85,23 @@ t_status	eval_pipeline(t_syntax_node	*pipeline_node)
  */
 static int	wait_pipe(pid_t child_pids[2], int *status)
 {
-	waitpid(child_pids[0], status, 0);
-	if (WIFSIGNALED(*status))
+	pid_t	child;
+	int		sig;
+
+	child = waitpid(-1, status, 0);
+	if (child == child_pids[CHILD_LEFT])
 	{
-		kill(child_pids[1], SIGTERM);
-		(get_shell_data())->last_status = WTERMSIG(*status);
-		return (*status);
+		if (WIFSIGNALED(*status))
+		{
+			sig = WTERMSIG(*status);
+			debug("[wait_child] child (%d) killed by signal %d (%s)\n", getpid(), sig, strsignal(sig));
+			kill(child_pids[CHILD_RIGHT], SIGTERM);
+			(get_shell_data())->last_status = WTERMSIG(*status);
+			return (*status);
+		}
+		return (wait_child(child_pids[CHILD_RIGHT], status, 0));
 	}
-	return (wait_child(child_pids[1], status, 0));
+	return (wait_child(child_pids[CHILD_LEFT], status, 0));
 }
 
 /**

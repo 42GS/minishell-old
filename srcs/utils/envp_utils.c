@@ -6,7 +6,7 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 00:49:34 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/05 16:03:33 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/17 23:34:28 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ char	**lst_from_hashmap(t_hash_map *map)
 			cur = cur->next;
 		}
 	}
+	list[list_idx] = NULL;
 	return (list);
 }
 

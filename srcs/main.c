@@ -6,7 +6,7 @@
 /*   By: jyoo <jyoo@student.42gyeongsan.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 10:46:09 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 22:15:11 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 03:41:11 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,18 @@
 #include <errno.h>
 #include <termios.h>
 #include <unistd.h>
+#include <fcntl.h>
 
 #include "libft.h"
 
 #include "shell_data.h"
 #include "tokenizer.h"
-#include "parser.h"
 #include "eval.h"
 #include "sig.h"
 
+#include "debug.h"
+
+static void	restore_tty(void);
 static void	interactive_mode(void);
 static void	process_input(char *input);
 
@@ -68,6 +71,7 @@ int	main(int argc, char *argv[], char *envp[])
 		interactive_mode();
 	restore_terminal_settings();
 	restore_signals();
+	clear_shell_data();
 	exit(get_shell_data()->last_status);
 }
 
@@ -97,6 +101,7 @@ static void	interactive_mode(void)
 
 	while (TRUE)
 	{
+		restore_tty();
 		input = readline(PROMPT);
 		if (!input)
 			break ;
@@ -104,6 +109,8 @@ static void	interactive_mode(void)
 			continue ;
 		add_history(input);
 		process_input(input);
+		free(input);
+		input = NULL;
 	}
 }
 
@@ -122,11 +129,33 @@ static void	process_input(char *input)
 		tk = tk_lst;
 		syntax_tree = parse_input(&tk);
 		clear_token_lst(&tk_lst);
+		tk_lst = NULL;
+		tk = NULL;
 		st = syntax_tree;
 		eval(st);
+		dup2(get_shell_data()->stdin_fd, STDIN_FILENO);
+		dup2(get_shell_data()->stdout_fd, STDOUT_FILENO);
 		remove_syntax_node(syntax_tree);
+		syntax_tree = NULL;
+		st = NULL;
 	}
-	dup2(get_shell_data()->stdin_fd, STDIN_FILENO);
-	dup2(get_shell_data()->stdout_fd, STDOUT_FILENO);
-	clear_token_lst(&tk_lst);
+}
+
+static void	restore_tty(void)
+{
+    /* STDIN, STDOUT이 터미널이 아니면 복구 시도 */
+    if (!isatty(STDIN_FILENO)) {
+        int fd = open("/dev/tty", O_RDONLY);
+        if (fd != -1) {
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+        }
+    }
+    if (!isatty(STDOUT_FILENO)) {
+        int fd = open("/dev/tty", O_WRONLY);
+        if (fd != -1) {
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+        }
+    }
 }

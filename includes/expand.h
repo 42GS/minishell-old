@@ -6,7 +6,7 @@
 /*   By: jyoo < jyoo@student.42gyeongsan.kr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/02 00:12:00 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 23:13:47 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/16 22:12:51 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,13 @@ char		*expand_tilde(char *value);
 /* --- expand_utils.c --- */
 
 char		*replace_param(char *str, char **new_value);
-t_boolean	is_dollar_sign(char c);
+
+/* --- split_field.c --- */
+
+t_token		*split_field(t_token *token);
+
+/* --- unquote_field.c --- */
+
+char		*unquote_value(char *value);
 
 #endif

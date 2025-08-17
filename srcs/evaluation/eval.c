@@ -6,7 +6,7 @@
 /*   By: jyoo <jyoo@student.42gyeongsan.kr>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 17:35:00 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 21:31:10 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 01:45:41 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,11 @@
 #include <limits.h>
 #include <sys/wait.h>
 
-#include "eval.h"
 #include "def.h"
-#include "parser.h"
+#include "ast.h"
 #include "shell_data.h"
+
+#include "eval.h"
 
 /**
  * @brief 구문 트리 노드를 평가하여 명령을 실행한다.

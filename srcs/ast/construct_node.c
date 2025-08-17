@@ -6,14 +6,15 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 16:01:20 by yoshin            #+#    #+#             */
-/*   Updated: 2025/07/30 17:07:30 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 01:44:51 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
 #include "tokenizer.h"
-#include "parser.h"
+
+#include "ast.h"
 
 /**
  * @brief <list> 구문 규칙에 따라 구문 트리를 구성한다.

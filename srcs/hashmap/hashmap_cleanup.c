@@ -6,13 +6,15 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/29 23:05:24 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 20:50:42 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 03:37:43 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
 #include "hashmap.h"
+
+#include "debug.h"
 
 /**
  * @brief 해시 맵에서 지정된 키를 가진 엔트리를 제거합니다.
@@ -79,10 +81,17 @@ void	clear_hashmap(t_hash_map *map)
 		{
 			next = cur->next;
 			if (cur->key)
+			{
 				free(cur->key);
+				cur->key = NULL;
+			}
 			if (cur->value)
+			{
 				free(cur->value);
+				cur->value = NULL;
+			}
 			free(cur);
+			cur = NULL;
 			cur = next;
 		}
 		map->table[idx] = NULL;

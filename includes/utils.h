@@ -6,14 +6,16 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 20:56:21 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/09 03:52:20 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/16 21:59:34 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef UTILS_H
 # define UTILS_H
 
-# define INIT_CAPACITY 16
+# define INIT_CAPACITY	(16)
+# define S_IDX			(0)
+# define P_IDX			(1)
 
 # include "def.h"
 
@@ -35,6 +37,12 @@ char		*find_next_delim(
 				char *str,
 				t_boolean (*predicate)(char),
 				char mask);
+
+/* --- find_next_delim_utils.c --- */
+
+t_boolean		is_ifs(char c);
+t_boolean		is_dollar_sign(char c);
+t_boolean		is_tk_delim(char c);
 
 /* --- ft_multiplejoin.c --- */
 

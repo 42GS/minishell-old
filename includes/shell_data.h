@@ -32,6 +32,7 @@ typedef struct s_shell_data
 	int					stdin_fd;
 	int					stdout_fd;
 	t_boolean			in_pipe;
+	t_boolean			in_heredoc;
 	t_boolean			is_exit;
 }	t_shell_data;
 

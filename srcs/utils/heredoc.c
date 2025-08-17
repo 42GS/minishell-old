@@ -6,7 +6,7 @@
 /*   By: jyoo < jyoo@student.42gyeongsan.kr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/26 20:13:41 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/13 11:41:58 by jyoo             ###   ########.fr       */
+/*   Updated: 2025/08/18 03:05:12 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,30 +21,30 @@
 
 #include "libft.h"
 
-static void	read_input(char **input, const char *limiter, int tty_fd);
-static int	set_heredoc_fd(void);
+#include "debug.h"
+
+static void	read_input(char **input, const char *limiter);
 
 char	*heredoc(const char *limiter)
 {
-	int		tty_fd;
 	char	*input;
 
+	debug("[heredoc] called");
 	input = NULL;
-	tty_fd = set_heredoc_fd();
-	read_input(&input, limiter, tty_fd);
-	close(tty_fd);
+	read_input(&input, limiter);
+	debug("[heredoc] called");
 	return (input);
 }
 
-static void	read_input(char **input, const char *limiter, int tty_fd)
+static void	read_input(char **input, const char *limiter)
 {
 	char	*temp;
 	char	*line;
 
-	while (TRUE)
+	debug("[read_input] called !! - limiter : %s", limiter);
+	while (1)
 	{
-		write(tty_fd, "heredoc> ", 9);
-		line = readline("");
+		line = readline("heredoc> ");
 		if (ft_strncmp(line, limiter, ft_strlen(line) + 1) == 0)
 			break ;
 		temp = *input;
@@ -60,17 +60,5 @@ static void	read_input(char **input, const char *limiter, int tty_fd)
 		*input = ft_strjoin(temp, "\n");
 		free(temp);
 	}
-}
-
-static int	set_heredoc_fd(void)
-{
-	int	tty_fd;
-
-	tty_fd = open("/dev/tty", O_WRONLY);
-	if (tty_fd == -1)
-	{
-		perror("open /dev/tty");
-		exit(EXIT_FAILURE);
-	}
-	return (tty_fd);
+	debug("[read_input] loop out !!");
 }

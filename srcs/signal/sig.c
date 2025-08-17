@@ -6,18 +6,21 @@
 /*   By: jyoo < jyoo@student.42gyeongsan.kr >       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/11 14:17:35 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/16 13:54:45 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/17 19:19:16 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <termios.h>
+#include <sys/wait.h>
 
 #include "shell_data.h"
+#include "debug.h"
 
 /**
  * @brief SIGINT(Ctrl-C) 시그널 핸들러
@@ -34,12 +37,28 @@
  */
 static void	sigint_handler(int signo)
 {
+	int	status;
 	(void)signo;
-	write(STDOUT_FILENO, "\n", 1);
-	rl_replace_line("", 0);
-	rl_on_new_line();
-	rl_redisplay();
-	(get_shell_data())->last_status = 1;
+	if (wait(&status) == -1)
+	{
+    	rl_replace_line("", 0);
+		write(STDERR_FILENO, "\n", 1);
+    	rl_on_new_line();
+		rl_redisplay();
+	}
+	(get_shell_data())->last_status = 128 + SIGINT; // 항상 bash 규칙으로
+}
+
+static void heredoc_sigint_handler(int signo)
+{
+	int	status;
+    (void)signo;
+	if (wait(&status) == -1)
+	{
+    	rl_replace_line("", 0);
+		write(STDERR_FILENO, "\n", 1);
+	}
+    exit(128 + SIGINT);             // bash 호환 exit code
 }
 
 void	init_signals(void)
@@ -49,6 +68,17 @@ void	init_signals(void)
 	sigaction(SIGINT, NULL, &(get_shell_data()->old_int));
 	sigaction(SIGQUIT, NULL, &(get_shell_data()->old_quit));
 	sa.sa_handler = sigint_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+	sigaction(SIGINT, &sa, NULL);
+	signal(SIGQUIT, SIG_IGN);
+}
+
+void	set_heredoc_signals(void)
+{
+	struct sigaction	sa;
+
+	sa.sa_handler = heredoc_sigint_handler;
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_RESTART;
 	sigaction(SIGINT, &sa, NULL);

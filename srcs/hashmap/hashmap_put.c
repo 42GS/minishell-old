@@ -6,7 +6,7 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/31 01:23:22 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/05 16:02:56 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 00:24:44 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 #include "libft.h"
 
 #include "hashmap.h"
+
+#include "debug.h"
 
 /**
  * @brief 해시 맵에 키-값 쌍 저장
@@ -40,6 +42,7 @@ void	put_key_value(t_hash_map *map, char *key, char *value)
 		if (entry->value != NULL)
 			free(entry->value);
 		entry->value = ft_strdup(value);
+		debug("put entry - key : %s(%s), value : %s", key, entry->key, entry->value);
 		return ;
 	}
 	entry = create_new_entry(key, value);

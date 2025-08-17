@@ -6,14 +6,17 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/20 21:15:05 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 20:35:29 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 02:41:34 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "def.h"
 #include "libft.h"
 
 #include "tokenizer.h"
-#include "parser.h"
+#include "ast.h"
+
+static t_boolean	contain_heredoc(t_command *command);
 
 /**
  * @brief <command> 규칙을 파싱하여 구문 트리 노드를 생성한다.
@@ -75,10 +78,13 @@ t_syntax_node	*simple_command(t_token **tk_lst)
 		return (NULL);
 	simple_command_node = create_empty_node();
 	simple_command_node->type = NODE_SIMPLE_COMMAND;
+	simple_command_node->value.command.contain_heredoc = FALSE;
 	simple_command_node->value.command.prefix = cmd_prefix(tk_lst);
 	simple_command_node->value.command.word = ft_strdup((*tk_lst)->value);
 	(*tk_lst) = (*tk_lst)->next;
 	simple_command_node->value.command.suffix = cmd_suffix(tk_lst);
+	if (contain_heredoc(&(simple_command_node->value.command)))
+		simple_command_node->value.command.contain_heredoc = TRUE;
 	return (simple_command_node);
 }
 
@@ -164,4 +170,30 @@ t_syntax_node	*cmd_suffix(t_token **tk_lst)
 		cmd_suffix_node->value.b_node.right = cmd_suffix(tk_lst);
 	}
 	return (cmd_suffix_node);
+}
+
+static t_boolean	contain_heredoc(t_command *command)
+{
+	t_syntax_node	*prefix;
+	t_syntax_node	*suffix;
+
+	prefix = command->prefix;
+	while (prefix && prefix->type == NODE_CMD_PREFIX)
+	{
+		if (prefix->value.b_node.left->type == NODE_IO_REDIR_HEREDOC)
+			return (TRUE);
+		prefix = prefix->value.b_node.right;
+	}
+	if (prefix && prefix->value.b_node.left->type == NODE_IO_REDIR_HEREDOC)
+		return (TRUE);
+	suffix = command->suffix;
+	while (suffix && suffix->type == NODE_CMD_SUFFIX)
+	{
+		if (suffix->value.b_node.left->type == NODE_IO_REDIR_HEREDOC)
+			return (TRUE);
+		suffix = suffix->value.b_node.right;
+	}
+	if (suffix && suffix->value.b_node.left->type == NODE_IO_REDIR_HEREDOC)
+		return (TRUE);
+	return (FALSE);
 }

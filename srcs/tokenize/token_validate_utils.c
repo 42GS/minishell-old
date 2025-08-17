@@ -6,43 +6,41 @@
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/07 21:02:50 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 22:09:54 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/17 20:19:38 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "def.h"
-#include "tokenizer.h"
 
-static t_boolean	is_io_token(t_token *token);
-static t_boolean	is_op_token(t_token *token);
+#include "tokenizer.h"
 
 t_boolean	is_valid_sequence(t_token *token_lst)
 {
 	if (!token_lst)
 		return (FALSE);
-	if (token_lst->type == TK_AND_IF || token_lst->type == TK_OR_IF
+	if (token_lst->type == TK_EOF
+		|| token_lst->type == TK_AND_IF || token_lst->type == TK_OR_IF
 		|| token_lst->type == TK_PIPE || token_lst->type == TK_PIPE_ERR
 		|| token_lst->type == TK_AMPERSAND)
 		return (FALSE);
 	while (token_lst)
 	{
-		print_token(token_lst);
 		if (is_io_token(token_lst)
 			&& (is_op_token(token_lst->next)
 				|| is_io_token(token_lst->next)
 				|| token_lst->next->type == TK_EOF))
 			return (FALSE);
-		if (is_op_token(token_lst)
-			&& (is_op_token(token_lst->next)
-				|| is_io_token(token_lst->next)
-				|| token_lst->next->type == TK_EOF))
-			return (FALSE);
+		// if (is_op_token(token_lst)
+		// 	&& (is_op_token(token_lst->next)
+		// 		|| is_io_token(token_lst->next)
+		// 		|| token_lst->next->type == TK_EOF))
+		// 	return (FALSE);
 		token_lst = token_lst->next;
 	}
 	return (TRUE);
 }
 
-static t_boolean	is_io_token(t_token *token)
+t_boolean	is_io_token(t_token *token)
 {
 	if (!token)
 		return (FALSE);
@@ -52,7 +50,7 @@ static t_boolean	is_io_token(t_token *token)
 		|| token->type == TK_REDIR_HEREDOC);
 }
 
-static t_boolean	is_op_token(t_token *token)
+t_boolean	is_op_token(t_token *token)
 {
 	if (!token)
 		return (FALSE);

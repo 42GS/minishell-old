@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parser.h                                           :+:      :+:    :+:   */
+/*   ast.h                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yoshin <yoshin@student.42gyeongsan.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 12:19:50 by yoshin            #+#    #+#             */
-/*   Updated: 2025/08/15 21:04:33 by yoshin           ###   ########.fr       */
+/*   Updated: 2025/08/18 01:58:07 by yoshin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PARSER_H
-# define PARSER_H
+#ifndef AST_H
+# define AST_H
 
 # include "tokenizer.h"
 
@@ -38,6 +38,7 @@ typedef enum e_node_type
 
 typedef struct s_command
 {
+	t_boolean				contain_heredoc;
 	struct s_syntax_node	*prefix;
 	char					*word;
 	struct s_syntax_node	*suffix;
